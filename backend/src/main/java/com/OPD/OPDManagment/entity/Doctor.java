@@ -5,6 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import jakarta.validation.constraints.NotBlank;
+
 @Entity
 public class Doctor {
     
@@ -12,7 +14,10 @@ public class Doctor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Doctor name is required")
     private String name;
+    
+    @NotBlank(message = "Specialization is required")
     private String specialization;
 
     public Doctor() {

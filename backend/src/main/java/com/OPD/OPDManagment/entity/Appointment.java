@@ -7,6 +7,8 @@ import jakarta.persistence.Id;
 
 import java.time.LocalDateTime;
 
+import jakarta.validation.constraints.NotNull;
+
 @Entity
 public class Appointment {
     
@@ -14,8 +16,13 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Patient ID is required")
     private Long patientId;
+    
+    @NotNull(message = "Doctor ID is required")
     private Long doctorId;
+    
+    @NotNull(message = "Appointment date and time is required")
     private LocalDateTime appointmentDateTime;
 
     public Appointment() {

@@ -1,0 +1,91 @@
+<div class="row">
+  <div class="col-md-5">
+    <div class="card mb-4">
+      <div class="card-header bg-info text-white">
+        <h4 class="mb-0">Consultation Form</h4>
+      </div>
+      <div class="card-body">
+        
+        <div class="mb-4">
+          <label class="form-label fw-bold">1. Select Patient:</label>
+          <select class="form-select" [(ngModel)]="selectedPatientId" (change)="onPatientChange()">
+            <option [ngValue]="null">Select Patient...</option>
+            <option *ngFor="let p of patients" [ngValue]="p.id">{{ p.name }}</option>
+          </select>
+        </div>
+
+        <div *ngIf="selectedPatientId && patientAppointments.length > 0">
+          <label class="form-label fw-bold">2. Select Appointment:</label>
+          <form (ngSubmit)="saveConsultation()">
+            <select class="form-select mb-3" [(ngModel)]="selectedApptId" name="appointment" required>
+              <option [ngValue]="null">Select Appointment to Complete</option>
+              <option *ngFor="let a of patientAppointments" [ngValue]="a.id">
+                {{ a.appointmentDateTime | date:'medium' }}
+              </option>
+            </select>
+
+            <div *ngIf="selectedApptId" class="p-3 border rounded bg-light">
+              <h5 class="mb-3">Enter Vitals & Notes</h5>
+              
+              <div class="mb-3">
+                <label class="form-label">Blood Pressure</label>
+                <input type="text" class="form-control" [(ngModel)]="newConsultation.bloodPressure" name="bp" placeholder="e.g. 120/80" required>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Heart Rate</label>
+                <input type="text" class="form-control" [(ngModel)]="newConsultation.heartRate" name="hr" placeholder="e.g. 75 bpm" required>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Notes</label>
+                <textarea class="form-control" [(ngModel)]="newConsultation.notes" name="notes" placeholder="Short notes..." rows="3" required></textarea>
+              </div>
+              
+              <button type="submit" class="btn btn-info w-100 text-white">Mark Consultation Complete</button>
+            </div>
+          </form>
+        </div>
+        
+        <div *ngIf="selectedPatientId && patientAppointments.length === 0" class="alert alert-warning">
+          No appointments found for this patient.
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-header bg-secondary text-white">
+        <h4 class="mb-0">Completed Consultations</h4>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-striped table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Appt Date</th>
+              <th>Blood Pressure</th>
+              <th>Heart Rate</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of completedConsultations">
+              <td>{{ c.appointmentDate | date:'short' }}</td>
+              <td>{{ c.bloodPressure }}</td>
+              <td>{{ c.heartRate }}</td>
+              <td>{{ c.notes }}</td>
+            </tr>
+            <tr *ngIf="completedConsultations.length === 0">
+              <td colspan="4" class="text-center text-muted py-3">
+                <span *ngIf="selectedPatientId">No completed consultations for this patient.</span>
+                <span *ngIf="!selectedPatientId">Select a patient to view their consultations.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

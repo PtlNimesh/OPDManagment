@@ -5,6 +5,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 @Entity
 public class Consultation {
 
@@ -12,9 +16,16 @@ public class Consultation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Appointment ID is required")
     private Long apointmentId;
+    
+    @NotBlank(message = "Blood pressure is required")
     private String bloodPressure;
+    
+    @NotBlank(message = "Heart rate is required")
     private String heartRate;
+    
+    @Size(max = 500, message = "Notes cannot exceed 500 characters")
     private String notes;
 
     public Consultation() {

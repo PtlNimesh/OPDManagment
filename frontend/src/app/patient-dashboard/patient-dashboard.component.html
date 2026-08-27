@@ -1,0 +1,119 @@
+<div class="container mt-4">
+  <h2 class="mb-4">Patient Portal</h2>
+
+  <div class="row">
+    <!-- Register Patient -->
+    <div class="col-md-5">
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">1. Register New Patient</h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="registerPatient()">
+            <div class="mb-3">
+              <label>Name</label>
+              <input type="text" class="form-control" [(ngModel)]="newPatient.name" name="name" required minlength="2">
+            </div>
+            <div class="mb-3">
+              <label>Gender</label>
+              <select class="form-select" [(ngModel)]="newPatient.gender" name="gender" required>
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label>Age</label>
+              <input type="number" class="form-control" [(ngModel)]="newPatient.age" name="age" required min="0">
+            </div>
+            <div class="mb-3">
+              <label>Phone Number</label>
+              <input type="text" class="form-control" [(ngModel)]="newPatient.phoneNumber" name="phone" required pattern="^[0-9]{10}$">
+            </div>
+            <button type="submit" class="btn btn-success w-100">Register</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Book & View Appointments -->
+    <div class="col-md-7">
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">2. Book Appointment</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-4">
+            <label class="form-label fw-bold">Select Patient:</label>
+            <select class="form-select" [(ngModel)]="selectedPatientId" (change)="onPatientSelect()">
+              <option [ngValue]="null">-- Select a Patient --</option>
+              <option *ngFor="let p of patients" [ngValue]="p.id">{{ p.name }} ({{ p.phoneNumber }})</option>
+            </select>
+          </div>
+
+          <div *ngIf="selectedPatientId">
+            <hr>
+            <h5 class="mb-3 text-primary">Book Appointment</h5>
+            <form (ngSubmit)="bookAppointment()" class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label>Select Doctor</label>
+                <select class="form-select" [(ngModel)]="newAppt.doctorId" name="doctor" required>
+                  <option [ngValue]="null">Select Doctor</option>
+                  <option *ngFor="let d of doctors" [ngValue]="d.id">Dr. {{ d.name }}</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label>Date & Time</label>
+                <input type="datetime-local" class="form-control" [(ngModel)]="newAppt.appointmentDateTime" name="dateTime" required>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary w-100">Book Appointment</button>
+              </div>
+            </form>
+
+            <hr>
+            <h5 class="mb-3 text-primary">My Appointments</h5>
+            <table class="table table-bordered table-striped">
+              <thead class="table-light">
+                <tr>
+                  <th>Appt ID</th>
+                  <th>Doctor ID</th>
+                  <th>Date / Time</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let a of patientAppointments">
+                  <td>{{ a.id }}</td>
+                  <td>{{ a.doctorId }}</td>
+                  <td>{{ a.appointmentDateTime | date:'medium' }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-info text-white" (click)="viewConsultation(a.id)">View Consultation</button>
+                  </td>
+                </tr>
+                <tr *ngIf="patientAppointments.length === 0">
+                  <td colspan="4" class="text-center text-muted">No appointments booked yet.</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Consultation Details Display -->
+            <div *ngIf="selectedConsultation" class="alert alert-success mt-3">
+              <h6 class="alert-heading">Consultation Details</h6>
+              <hr>
+              <p class="mb-1"><strong>Blood Pressure:</strong> {{ selectedConsultation.bloodPressure }}</p>
+              <p class="mb-1"><strong>Heart Rate:</strong> {{ selectedConsultation.heartRate }}</p>
+              <p class="mb-0"><strong>Notes:</strong> {{ selectedConsultation.notes }}</p>
+            </div>
+            
+            <div *ngIf="consultationError" class="alert alert-warning mt-3">
+              {{ consultationError }}
+            </div>
+
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
