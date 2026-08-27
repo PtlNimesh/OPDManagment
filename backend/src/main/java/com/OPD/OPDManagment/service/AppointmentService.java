@@ -18,6 +18,9 @@ public class AppointmentService {
     }
 
     public Appointment createAppointment(Appointment appointment) {
+        if (appointment.getAppointmentDateTime() != null && appointment.getAppointmentDateTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Appointment date cannot be in the past");
+        }
         return appointmentRepository.save(appointment);
     }
 

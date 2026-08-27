@@ -15,13 +15,25 @@ export class AppointmentsComponent implements OnInit {
   doctors: any[] = [];
   todaysAppointments: any[] = [];
   
+  minDateTime: string = '';
   newAppt = { patientId: null, doctorId: null, appointmentDateTime: '' };
 
   constructor(private api: ApiService) {}
 
   ngOnInit(): void {
+    this.setMinDateTime();
     this.loadData();
     this.loadTodaysAppointments();
+  }
+
+  setMinDateTime() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    this.minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 
   loadData() {
@@ -34,6 +46,18 @@ export class AppointmentsComponent implements OnInit {
   }
 
   bookAppointment() {
+    if (!this.newAppt.appointmentDateTime) {
+      alert('Please select appointment date and time.');
+      return;
+    }
+
+    const selectedDate = new Date(this.newAppt.appointmentDateTime);
+    const now = new Date();
+    if (selectedDate < now) {
+      alert('Cannot book appointment for a past date or time.');
+      return;
+    }
+
     let dt = this.newAppt.appointmentDateTime;
     if (dt && dt.length === 16) {
       dt += ':00'; // Append seconds for Spring Boot LocalDateTime parsing
@@ -53,7 +77,13 @@ export class AppointmentsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error booking appointment:', err);
-        alert('Failed to book appointment. Ensure all fields are selected correctly.');
+        let msg = 'Failed to book appointment.';
+        if (err.error && err.error.errors && err.error.errors.length > 0) {
+          msg += ' ' + err.error.errors.map((e: any) => e.defaultMessage).join(', ');
+        } else if (err.error && err.error.message) {
+          msg += ' ' + err.error.message;
+        }
+        alert(msg);
       }
     });
   }

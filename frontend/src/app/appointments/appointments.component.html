@@ -24,7 +24,7 @@
 
           <div class="mb-3">
             <label class="form-label">Date & Time</label>
-            <input type="datetime-local" class="form-control" [(ngModel)]="newAppt.appointmentDateTime" name="dateTime" required>
+            <input type="datetime-local" class="form-control" [(ngModel)]="newAppt.appointmentDateTime" name="dateTime" [min]="minDateTime" required>
           </div>
           
           <button type="submit" class="btn btn-warning w-100">Book Appointment</button>

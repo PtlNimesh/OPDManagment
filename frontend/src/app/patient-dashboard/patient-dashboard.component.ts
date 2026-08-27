@@ -16,13 +16,25 @@ export class PatientDashboardComponent implements OnInit {
   selectedPatientId: number | null = null;
   patientAppointments: any[] = [];
   
+  minDateTime: string = '';
   newPatient = { name: '', gender: '', age: null, phoneNumber: '' };
   newAppt = { doctorId: null, appointmentDateTime: '' };
 
   constructor(private api: ApiService) {}
 
   ngOnInit(): void {
+    this.setMinDateTime();
     this.loadData();
+  }
+
+  setMinDateTime() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    this.minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 
   loadData() {
@@ -57,6 +69,18 @@ export class PatientDashboardComponent implements OnInit {
   bookAppointment() {
     if (!this.selectedPatientId) {
       alert("Please select a patient first.");
+      return;
+    }
+
+    if (!this.newAppt.appointmentDateTime) {
+      alert("Please select appointment date and time.");
+      return;
+    }
+
+    const selectedDate = new Date(this.newAppt.appointmentDateTime);
+    const now = new Date();
+    if (selectedDate < now) {
+      alert("Cannot book appointment for a past date or time.");
       return;
     }
     

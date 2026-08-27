@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.FutureOrPresent;
 
 @Entity
 public class Appointment {
@@ -23,6 +24,7 @@ public class Appointment {
     private Long doctorId;
     
     @NotNull(message = "Appointment date and time is required")
+    @FutureOrPresent(message = "Appointment date cannot be in the past")
     private LocalDateTime appointmentDateTime;
 
     public Appointment() {
