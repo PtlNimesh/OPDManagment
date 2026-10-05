@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../api.service';
+import { AuthService, UserSession } from '../auth.service';
 
 @Component({
   selector: 'app-patient-dashboard',
@@ -11,18 +12,26 @@ import { ApiService } from '../api.service';
   styleUrls: ['./patient-dashboard.component.css']
 })
 export class PatientDashboardComponent implements OnInit {
+  currentUser: UserSession | null = null;
+  activeTab: 'book' | 'my-appointments' = 'book';
+
   patients: any[] = [];
   doctors: any[] = [];
   selectedPatientId: number | null = null;
   patientAppointments: any[] = [];
   
   minDateTime: string = '';
-  newPatient = { name: '', gender: '', age: null, phoneNumber: '' };
   newAppt = { doctorId: null, appointmentDateTime: '' };
 
-  constructor(private api: ApiService) {}
+  selectedConsultation: any = null;
+  selectedApptForConsultation: number | null = null;
+  consultationError: string = '';
+  loadingConsultation: boolean = false;
+
+  constructor(private api: ApiService, public authService: AuthService) {}
 
   ngOnInit(): void {
+    this.currentUser = this.authService.currentUserValue;
     this.setMinDateTime();
     this.loadData();
   }
@@ -38,22 +47,28 @@ export class PatientDashboardComponent implements OnInit {
   }
 
   loadData() {
-    this.api.getPatients().subscribe(data => this.patients = data);
-    this.api.getDoctors().subscribe(data => this.doctors = data);
-  }
+    this.api.getPatients().subscribe(data => {
+      this.patients = data;
+      if (this.currentUser && this.currentUser.entityId) {
+        const found = this.patients.find(p => p.id === this.currentUser?.entityId);
+        if (found) {
+          this.selectedPatientId = found.id;
+        } else if (this.patients.length > 0) {
+          this.selectedPatientId = this.patients[0].id;
+        }
+      } else if (this.patients.length > 0) {
+        this.selectedPatientId = this.patients[0].id;
+      }
+      this.loadMyAppointments();
+    });
 
-  registerPatient() {
-    this.api.addPatient(this.newPatient).subscribe({
-      next: (res) => {
-        this.newPatient = { name: '', gender: '', age: null, phoneNumber: '' };
-        this.loadData();
-        alert('Patient Registered!');
-      },
-      error: () => alert('Failed to register patient.')
+    this.api.getDoctors().subscribe({
+      next: data => this.doctors = data || [],
+      error: err => console.error('Error fetching doctors list:', err)
     });
   }
 
-  onPatientSelect() {
+  loadMyAppointments() {
     if (this.selectedPatientId) {
       this.api.getAppointmentsByPatient(this.selectedPatientId).subscribe(data => {
         this.patientAppointments = data;
@@ -63,12 +78,14 @@ export class PatientDashboardComponent implements OnInit {
     }
   }
 
-  selectedConsultation: any = null;
-  consultationError: string = '';
-
   bookAppointment() {
     if (!this.selectedPatientId) {
-      alert("Please select a patient first.");
+      alert("No patient session identified. Please re-login.");
+      return;
+    }
+
+    if (!this.newAppt.doctorId) {
+      alert("Please select a doctor.");
       return;
     }
 
@@ -96,13 +113,14 @@ export class PatientDashboardComponent implements OnInit {
     this.api.bookAppointment(apptData).subscribe({
       next: () => {
         this.newAppt = { doctorId: null, appointmentDateTime: '' };
-        this.onPatientSelect();
+        this.loadMyAppointments();
+        this.activeTab = 'my-appointments';
         alert('Appointment booked successfully!');
       },
       error: (err) => {
         let msg = 'Failed to book appointment.';
-        if (err.error && err.error.errors && err.error.errors.length > 0) {
-          msg += ' ' + err.error.errors.map((e: any) => e.defaultMessage).join(', ');
+        if (err.error && err.error.message) {
+          msg += ' ' + err.error.message;
         }
         alert(msg);
       }
@@ -110,19 +128,23 @@ export class PatientDashboardComponent implements OnInit {
   }
 
   viewConsultation(apptId: number) {
+    this.selectedApptForConsultation = apptId;
     this.selectedConsultation = null;
     this.consultationError = '';
+    this.loadingConsultation = true;
     
     this.api.getConsultationByAppointment(apptId).subscribe({
       next: (data) => {
+        this.loadingConsultation = false;
         if (data) {
           this.selectedConsultation = data;
         } else {
-          this.consultationError = 'No consultation found for this appointment yet.';
+          this.consultationError = 'No consultation record has been added by doctor yet.';
         }
       },
       error: () => {
-        this.consultationError = 'No consultation found for this appointment yet.';
+        this.loadingConsultation = false;
+        this.consultationError = 'No consultation record has been added by doctor yet.';
       }
     });
   }

@@ -1,20 +1,14 @@
 package com.OPD.OPDManagment.controller;
 
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.http.ResponseEntity;
-import jakarta.validation.Valid;
-import java.util.Optional;
-
-import com.OPD.OPDManagment.entity.Consultation;
+import com.OPD.OPDManagment.dto.ConsultationRequestDto;
+import com.OPD.OPDManagment.dto.ConsultationResponseDto;
 import com.OPD.OPDManagment.service.ConsultationService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:3000"})
 @RestController
 @RequestMapping("/api/consultations")
 public class ConsultationController {
@@ -26,26 +20,27 @@ public class ConsultationController {
     }
 
     @PostMapping
-    public Consultation createConsultation(@Valid @RequestBody Consultation consultation) {
-        return consultationService.createConsultation(consultation);
+    public ResponseEntity<ConsultationResponseDto> createConsultation(@Valid @RequestBody ConsultationRequestDto consultationRequestDto) {
+        ConsultationResponseDto createdConsultation = consultationService.createConsultation(consultationRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdConsultation);
     }
 
-    @org.springframework.web.bind.annotation.PutMapping("/{id}")
-    public Consultation updateConsultation(@PathVariable Long id, @Valid @RequestBody Consultation consultationDetails) {
-        Consultation consultation = consultationService.getConsultationById(id);
-        consultation.setBloodPressure(consultationDetails.getBloodPressure());
-        consultation.setHeartRate(consultationDetails.getHeartRate());
-        consultation.setNotes(consultationDetails.getNotes());
-        return consultationService.createConsultation(consultation); // Using save
+    @PutMapping("/{id}")
+    public ResponseEntity<ConsultationResponseDto> updateConsultation(
+            @PathVariable Long id,
+            @Valid @RequestBody ConsultationRequestDto consultationRequestDto) {
+        ConsultationResponseDto updatedConsultation = consultationService.updateConsultation(id, consultationRequestDto);
+        return ResponseEntity.ok(updatedConsultation);
     }
 
     @GetMapping("/appointment/{appointmentId}")
-    public ResponseEntity<Consultation> getConsultationByAppointment(@PathVariable Long appointmentId) {
-        Optional<Consultation> consultation = consultationService.getConsultationByAppointmentId(appointmentId);
-        return consultation.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<ConsultationResponseDto> getConsultationByAppointment(@PathVariable Long appointmentId) {
+        return consultationService.getConsultationByAppointmentId(appointmentId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @org.springframework.web.bind.annotation.DeleteMapping("/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteConsultation(@PathVariable Long id) {
         consultationService.deleteConsultation(id);
         return ResponseEntity.noContent().build();

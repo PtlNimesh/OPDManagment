@@ -1,0 +1,21 @@
+.doctor-container {
+  padding-top: 10px;
+}
+
+.custom-doctor-nav .nav-link {
+  background: #f1f5f9;
+  color: #475569;
+  border-radius: 12px;
+  transition: all 0.2s ease-in-out;
+}
+
+.custom-doctor-nav .nav-link.active {
+  background: #059669;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+}
+
+.extra-small {
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../api.service';
+import { AuthService, UserSession } from '../auth.service';
 
 @Component({
   selector: 'app-doctor-dashboard',
@@ -11,32 +12,24 @@ import { ApiService } from '../api.service';
   styleUrls: ['./doctor-dashboard.component.css']
 })
 export class DoctorDashboardComponent implements OnInit {
+  currentUser: UserSession | null = null;
+  activeTab: 'patient-directory' | 'todays-appointments' | 'consultation' = 'todays-appointments';
+
   patients: any[] = [];
   searchQuery = '';
   todaysAppointments: any[] = [];
-  
-  newDoctor = { name: '', specialization: '' };
 
   selectedApptId: number | null = null;
   consultationData = { id: null, bloodPressure: '', heartRate: '', notes: '' };
   isUpdating = false;
   editMode = false;
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, public authService: AuthService) {}
 
   ngOnInit(): void {
+    this.currentUser = this.authService.currentUserValue;
     this.loadPatients();
     this.loadAppointments();
-  }
-
-  registerDoctor() {
-    this.api.addDoctor(this.newDoctor).subscribe({
-      next: () => {
-        this.newDoctor = { name: '', specialization: '' };
-        alert('Doctor Registered!');
-      },
-      error: () => alert('Failed to register doctor')
-    });
   }
 
   loadPatients() {
@@ -44,7 +37,7 @@ export class DoctorDashboardComponent implements OnInit {
   }
 
   deletePatient(id: number) {
-    if (confirm('Delete this patient?')) {
+    if (confirm('Delete this patient from clinic records?')) {
       this.api.deletePatient(id).subscribe(() => this.loadPatients());
     }
   }
@@ -53,12 +46,17 @@ export class DoctorDashboardComponent implements OnInit {
     this.api.getTodaysAppointments().subscribe(data => this.todaysAppointments = data);
   }
 
+  startConsultationForAppt(apptId: number, mode: string = 'create') {
+    this.selectedApptId = apptId;
+    this.activeTab = 'consultation';
+    this.openConsultation(apptId, mode);
+  }
+
   openConsultation(apptId: number, mode: string) {
     this.selectedApptId = apptId;
     this.api.getConsultationByAppointment(apptId).subscribe({
       next: (data) => {
         if (data) {
-          // Consultation exists
           if (mode === 'create') {
             alert('Consultation already exists for this appointment! Switching to View mode.');
             mode = 'view';
@@ -67,7 +65,6 @@ export class DoctorDashboardComponent implements OnInit {
           this.isUpdating = true;
           this.editMode = (mode === 'update');
         } else {
-          // No consultation exists
           if (mode === 'view' || mode === 'update') {
             alert('No consultation exists yet for this appointment! Switching to Create mode.');
             mode = 'create';
@@ -110,8 +107,18 @@ export class DoctorDashboardComponent implements OnInit {
   }
 
   saveConsultation() {
+    if (!this.selectedApptId) {
+      alert('Please select an appointment first.');
+      return;
+    }
+
+    if (!this.consultationData.bloodPressure || !this.consultationData.heartRate) {
+      alert('Please enter Blood Pressure and Heart Rate.');
+      return;
+    }
+
     const payload = {
-      apointmentId: this.selectedApptId, // Matches backend field 'apointmentId'
+      apointmentId: this.selectedApptId,
       bloodPressure: this.consultationData.bloodPressure,
       heartRate: this.consultationData.heartRate,
       notes: this.consultationData.notes
@@ -120,16 +127,18 @@ export class DoctorDashboardComponent implements OnInit {
     if (this.isUpdating && this.consultationData.id) {
       this.api.updateConsultation(this.consultationData.id, payload).subscribe({
         next: () => {
-          alert('Consultation updated!');
-          this.selectedApptId = null;
+          alert('Consultation updated successfully!');
+          this.activeTab = 'todays-appointments';
+          this.loadAppointments();
         },
         error: () => alert('Failed to update consultation.')
       });
     } else {
       this.api.addConsultation(payload).subscribe({
         next: () => {
-          alert('Consultation saved!');
-          this.selectedApptId = null;
+          alert('Consultation saved successfully!');
+          this.activeTab = 'todays-appointments';
+          this.loadAppointments();
         },
         error: () => alert('Failed to save consultation.')
       });

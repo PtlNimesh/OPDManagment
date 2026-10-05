@@ -1,0 +1,264 @@
+<div class="admin-container pb-5">
+  <!-- Header Banner -->
+  <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+      <h2 class="fw-bold text-dark mb-0">🏥 Hospital Management Console</h2>
+      <p class="text-muted small mb-0">Administrative oversight, staff control, and clinic OPD operations</p>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-primary btn-sm" (click)="loadAllData()">
+        <i class="bi bi-arrow-clockwise"></i> Refresh Data
+      </button>
+    </div>
+  </div>
+
+  <!-- Navigation Pills -->
+  <ul class="nav nav-pills mb-4 gap-2">
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="activeTab === 'overview'" (click)="activeTab = 'overview'">
+        📊 Operations Overview
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="activeTab === 'patients'" (click)="activeTab = 'patients'">
+        👥 Patients Directory ({{ patients.length }})
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="activeTab === 'doctors'" (click)="activeTab = 'doctors'">
+        🩺 Doctors Roster ({{ doctors.length }})
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="activeTab === 'appointments'" (click)="activeTab = 'appointments'">
+        📅 Today's Schedule ({{ todaysAppointments.length }})
+      </button>
+    </li>
+  </ul>
+
+  <!-- OVERVIEW TAB -->
+  <div *ngIf="activeTab === 'overview'">
+    <!-- Metric Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-3">
+        <div class="card card-stat bg-primary text-white p-3 shadow-sm border-0 rounded-4">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-white-50 text-uppercase extra-small fw-semibold">Total Patients</div>
+              <h2 class="fw-bold mb-0">{{ patients.length }}</h2>
+            </div>
+            <div class="stat-icon">👥</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card card-stat bg-success text-white p-3 shadow-sm border-0 rounded-4">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-white-50 text-uppercase extra-small fw-semibold">Active Doctors</div>
+              <h2 class="fw-bold mb-0">{{ doctors.length }}</h2>
+            </div>
+            <div class="stat-icon">🩺</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card card-stat bg-warning text-dark p-3 shadow-sm border-0 rounded-4">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-dark-50 text-uppercase extra-small fw-semibold">Today's Appointments</div>
+              <h2 class="fw-bold mb-0">{{ todaysAppointments.length }}</h2>
+            </div>
+            <div class="stat-icon">📅</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card card-stat bg-info text-white p-3 shadow-sm border-0 rounded-4">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-white-50 text-uppercase extra-small fw-semibold">System Status</div>
+              <h5 class="fw-bold mb-0">OPERATIONAL</h5>
+            </div>
+            <div class="stat-icon">⚡</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Action Cards -->
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="card shadow-sm border-0 rounded-4 h-100 p-4">
+          <h5 class="fw-bold mb-3"><i class="bi bi-person-plus-fill me-2 text-primary"></i> Register New Patient</h5>
+          <form (ngSubmit)="registerPatient()">
+            <div class="mb-2">
+              <input type="text" class="form-control" [(ngModel)]="newPatient.name" name="name" placeholder="Full Name" required>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-6">
+                <select class="form-select" [(ngModel)]="newPatient.gender" name="gender">
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <input type="number" class="form-control" [(ngModel)]="newPatient.age" name="age" placeholder="Age">
+              </div>
+            </div>
+            <div class="mb-3">
+              <input type="text" class="form-control" [(ngModel)]="newPatient.phoneNumber" name="phoneNumber" placeholder="Phone Number (10 digits)" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 fw-semibold">Add Patient</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card shadow-sm border-0 rounded-4 h-100 p-4">
+          <h5 class="fw-bold mb-3"><i class="bi bi-calendar-plus-fill me-2 text-success"></i> Quick Schedule Appointment</h5>
+          <form (ngSubmit)="bookAppointment()">
+            <div class="mb-2">
+              <select class="form-select" [(ngModel)]="newAppt.patientId" name="patientId">
+                <option [ngValue]="null">Select Patient</option>
+                <option *ngFor="let p of patients" [value]="p.id">{{ p.name }} (ID: {{ p.id }})</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <select class="form-select" [(ngModel)]="newAppt.doctorId" name="doctorId">
+                <option [ngValue]="null">Select Doctor</option>
+                <option *ngFor="let d of doctors" [value]="d.id">Dr. {{ d.name }} - {{ d.specialization }}</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <input type="datetime-local" class="form-control" [(ngModel)]="newAppt.appointmentDateTime" name="appointmentDateTime" [min]="minDateTime">
+            </div>
+            <button type="submit" class="btn btn-success w-100 fw-semibold">Book Appointment</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PATIENTS TAB -->
+  <div *ngIf="activeTab === 'patients'">
+    <div class="card shadow-sm border-0 rounded-4 p-4 mb-4">
+      <div class="d-flex justify-content-between mb-3">
+        <h5 class="fw-bold">All Registered Patients</h5>
+        <div class="input-group" style="max-width: 300px;">
+          <input type="text" class="form-control" [(ngModel)]="searchQuery" (input)="loadPatients()" placeholder="Search patient by name/phone...">
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Patient Name</th>
+              <th>Gender</th>
+              <th>Age</th>
+              <th>Phone Number</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of patients">
+              <td><strong>#{{ p.id }}</strong></td>
+              <td>{{ p.name }}</td>
+              <td><span class="badge bg-secondary">{{ p.gender }}</span></td>
+              <td>{{ p.age }} yrs</td>
+              <td>{{ p.phoneNumber }}</td>
+              <td>
+                <button class="btn btn-outline-danger btn-sm" (click)="deletePatient(p.id)">Delete</button>
+              </td>
+            </tr>
+            <tr *ngIf="patients.length === 0">
+              <td colspan="6" class="text-center text-muted py-4">No patients registered in the database.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOCTORS TAB -->
+  <div *ngIf="activeTab === 'doctors'">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card shadow-sm border-0 rounded-4 p-4">
+          <h5 class="fw-bold mb-3">Add New Doctor</h5>
+          <form (ngSubmit)="registerDoctor()">
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Doctor Name</label>
+              <input type="text" class="form-control" [(ngModel)]="newDoctor.name" name="docName" placeholder="Dr. First Last" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Specialization</label>
+              <input type="text" class="form-control" [(ngModel)]="newDoctor.specialization" name="spec" placeholder="Cardiology, Dermatology..." required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 fw-semibold">Save Doctor</button>
+          </form>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="card shadow-sm border-0 rounded-4 p-4">
+          <h5 class="fw-bold mb-3">Clinic Doctors Directory</h5>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Doctor Name</th>
+                  <th>Specialization</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let d of doctors">
+                  <td><strong>#{{ d.id }}</strong></td>
+                  <td>Dr. {{ d.name.replace('Dr. ', '') }}</td>
+                  <td><span class="badge bg-info text-dark">{{ d.specialization }}</span></td>
+                </tr>
+                <tr *ngIf="doctors.length === 0">
+                  <td colspan="3" class="text-center text-muted py-4">No doctors registered yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPOINTMENTS TAB -->
+  <div *ngIf="activeTab === 'appointments'">
+    <div class="card shadow-sm border-0 rounded-4 p-4">
+      <h5 class="fw-bold mb-3">Today's Appointment Monitor</h5>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Patient</th>
+              <th>Doctor</th>
+              <th>Specialization</th>
+              <th>Scheduled Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let appt of todaysAppointments">
+              <td><strong>#{{ appt.id }}</strong></td>
+              <td>{{ appt.patientName }} (ID: {{ appt.patientId }})</td>
+              <td>Dr. {{ appt.doctorName }}</td>
+              <td><span class="badge bg-secondary">{{ appt.doctorSpecialization }}</span></td>
+              <td>{{ appt.appointmentDateTime | date:'medium' }}</td>
+            </tr>
+            <tr *ngIf="todaysAppointments.length === 0">
+              <td colspan="5" class="text-center text-muted py-4">No appointments scheduled for today.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -6,9 +6,22 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:8080/api';
+  private baseUrl = 'http://localhost:7777/api';
 
   constructor(private http: HttpClient) { }
+
+  // Auth
+  login(credentials: { email?: string; username?: string; password?: string; role?: string }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/auth/login`, credentials);
+  }
+
+  register(userData: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/auth/register`, userData);
+  }
+
+  getRoles(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/auth/roles`);
+  }
 
   // Patients
   getPatients(query?: string): Observable<any[]> {

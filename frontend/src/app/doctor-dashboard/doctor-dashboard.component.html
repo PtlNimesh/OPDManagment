@@ -1,155 +1,222 @@
-<div class="container mt-4">
-  <h2 class="mb-4">Doctor Portal</h2>
-
-  <!-- Register Doctor -->
-  <div class="card mb-4 shadow-sm border-success">
-    <div class="card-header bg-success text-white">
-      <h5 class="mb-0">Register New Doctor</h5>
+<div class="doctor-container pb-5">
+  <!-- Header Banner -->
+  <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+      <h2 class="fw-bold text-dark mb-0">🩺 Doctor Clinical Portal</h2>
+      <p class="text-muted small mb-0">Logged in as: <span class="badge bg-success fs-6">{{ currentUser?.name || 'Dr. Practitioner' }}</span></p>
     </div>
-    <div class="card-body">
-      <form (ngSubmit)="registerDoctor()" class="row g-3">
-        <div class="col-md-5">
-          <input type="text" class="form-control" [(ngModel)]="newDoctor.name" name="name" placeholder="Doctor Name" required>
-        </div>
-        <div class="col-md-5">
-          <input type="text" class="form-control" [(ngModel)]="newDoctor.specialization" name="spec" placeholder="Specialization" required>
-        </div>
-        <div class="col-md-2">
-          <button type="submit" class="btn btn-success w-100">Register</button>
-        </div>
-      </form>
+    <span class="badge bg-primary fs-6 px-3 py-2">DOCTOR ACCESS</span>
+  </div>
+
+  <!-- Inner Navigation Bar -->
+  <ul class="nav nav-pills custom-doctor-nav mb-4 gap-2">
+    <li class="nav-item">
+      <button 
+        class="nav-link py-2 px-4 fw-bold" 
+        [class.active]="activeTab === 'todays-appointments'" 
+        (click)="activeTab = 'todays-appointments'; loadAppointments()">
+        📅 Today's Appointments ({{ todaysAppointments.length }})
+      </button>
+    </li>
+    <li class="nav-item">
+      <button 
+        class="nav-link py-2 px-4 fw-bold" 
+        [class.active]="activeTab === 'patient-directory'" 
+        (click)="activeTab = 'patient-directory'; loadPatients()">
+        👥 Patient Directory ({{ patients.length }})
+      </button>
+    </li>
+    <li class="nav-item">
+      <button 
+        class="nav-link py-2 px-4 fw-bold" 
+        [class.active]="activeTab === 'consultation'" 
+        (click)="activeTab = 'consultation'">
+        🩺 Create / Manage Consultation
+      </button>
+    </li>
+  </ul>
+
+  <!-- SECTION 1: TODAY'S APPOINTMENTS -->
+  <div *ngIf="activeTab === 'todays-appointments'">
+    <div class="card shadow-sm border-0 rounded-4 p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold mb-0">📅 Today's OPD Appointments</h4>
+        <button class="btn btn-outline-secondary btn-sm" (click)="loadAppointments()">
+          <i class="bi bi-arrow-clockwise me-1"></i> Refresh Queue
+        </button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Appt ID</th>
+              <th>Patient ID</th>
+              <th>Patient Name</th>
+              <th>Scheduled Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let appt of todaysAppointments">
+              <td><strong>#{{ appt.id }}</strong></td>
+              <td>#{{ appt.patientId }}</td>
+              <td class="fw-semibold">{{ appt.patientName || 'Patient #' + appt.patientId }}</td>
+              <td>{{ appt.appointmentDateTime | date:'shortTime' }} ({{ appt.appointmentDateTime | date:'mediumDate' }})</td>
+              <td>
+                <div class="btn-group" role="group">
+                  <button class="btn btn-sm btn-success fw-semibold" (click)="startConsultationForAppt(appt.id, 'create')" title="Create Consultation">
+                    ➕ Create Consult
+                  </button>
+                  <button class="btn btn-sm btn-info text-white fw-semibold" (click)="startConsultationForAppt(appt.id, 'view')" title="View Consultation">
+                    👁️ View
+                  </button>
+                  <button class="btn btn-sm btn-warning text-dark fw-semibold" (click)="startConsultationForAppt(appt.id, 'update')" title="Update Consultation">
+                    ✏️ Update
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteConsultationFromTable(appt.id)" title="Delete Consultation">
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="todaysAppointments.length === 0">
+              <td colspan="5" class="text-center text-muted py-5">
+                <div class="fs-1 opacity-50 mb-2">📋</div>
+                No appointments scheduled for today.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <!-- Patient Management -->
-  <div class="card mb-4 shadow-sm border-info">
-    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">Patient Directory</h5>
-      <div class="d-flex">
-        <input type="text" class="form-control form-control-sm me-2" [(ngModel)]="searchQuery" placeholder="Search name/phone">
-        <button class="btn btn-light btn-sm" (click)="loadPatients()">Search</button>
+  <!-- SECTION 2: PATIENT DIRECTORY -->
+  <div *ngIf="activeTab === 'patient-directory'">
+    <div class="card shadow-sm border-0 rounded-4 p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold mb-0">👥 Clinic Patient Directory</h4>
+        <div class="input-group" style="max-width: 320px;">
+          <input 
+            type="text" 
+            class="form-control" 
+            [(ngModel)]="searchQuery" 
+            (input)="loadPatients()" 
+            placeholder="Search patient name or phone...">
+          <button class="btn btn-primary" (click)="loadPatients()">Search</button>
+        </div>
       </div>
-    </div>
-    <div class="card-body p-0">
-      <table class="table table-striped table-hover mb-0">
-        <thead class="table-light">
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Gender</th>
-            <th>Age</th>
-            <th>Phone</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let p of patients">
-            <td>{{ p.id }}</td>
-            <td>{{ p.name }}</td>
-            <td>{{ p.gender }}</td>
-            <td>{{ p.age }}</td>
-            <td>{{ p.phoneNumber }}</td>
-            <td>
-              <button class="btn btn-danger btn-sm" (click)="deletePatient(p.id)">Delete</button>
-            </td>
-          </tr>
-          <tr *ngIf="patients.length === 0">
-            <td colspan="6" class="text-center py-3">No patients found.</td>
-          </tr>
-        </tbody>
-      </table>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Patient Name</th>
+              <th>Gender</th>
+              <th>Age</th>
+              <th>Phone Number</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of patients">
+              <td><strong>#{{ p.id }}</strong></td>
+              <td class="fw-semibold">{{ p.name }}</td>
+              <td><span class="badge bg-secondary">{{ p.gender }}</span></td>
+              <td>{{ p.age }} yrs</td>
+              <td>{{ p.phoneNumber }}</td>
+              <td>
+                <button class="btn btn-outline-danger btn-sm" (click)="deletePatient(p.id)">Delete Record</button>
+              </td>
+            </tr>
+            <tr *ngIf="patients.length === 0">
+              <td colspan="6" class="text-center text-muted py-4">No patient records found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <div class="row">
-    <!-- Today's Appointments -->
-    <div class="col-md-6">
-      <div class="card shadow-sm border-warning">
-        <div class="card-header bg-warning text-dark">
-          <h5 class="mb-0">Today's Appointments</h5>
-        </div>
-        <div class="card-body p-0">
-          <table class="table table-hover mb-0">
-            <thead class="table-light">
-              <tr>
-                <th>Appt ID</th>
-                <th>Patient ID</th>
-                <th>Time</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let a of todaysAppointments">
-                <td>{{ a.id }}</td>
-                <td>{{ a.patientId }}</td>
-                <td>{{ a.appointmentDateTime | date:'shortTime' }}</td>
-                <td>
-                  <div class="btn-group" role="group">
-                    <button class="btn btn-sm btn-success" (click)="openConsultation(a.id, 'create')" title="Create Consult">Create</button>
-                    <button class="btn btn-sm btn-info text-white" (click)="openConsultation(a.id, 'view')" title="View Consult">View</button>
-                    <button class="btn btn-sm btn-warning" (click)="openConsultation(a.id, 'update')" title="Update Consult">Update</button>
-                    <button class="btn btn-sm btn-danger" (click)="deleteConsultationFromTable(a.id)" title="Delete Consult">Delete</button>
-                  </div>
-                </td>
-              </tr>
-              <tr *ngIf="todaysAppointments.length === 0">
-                <td colspan="4" class="text-center py-3 text-muted">No appointments today.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Consultation Details / Form -->
-    <div class="col-md-6">
-      <div class="card shadow-sm border-dark" *ngIf="selectedApptId">
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Consultation (Appt #{{ selectedApptId }})</h5>
-          <span class="badge bg-secondary">{{ isUpdating ? 'Existing' : 'New' }}</span>
-        </div>
-        <div class="card-body">
-          
-          <!-- View Mode -->
-          <div *ngIf="isUpdating && !editMode">
-            <h6 class="text-primary mb-3">View Consultation</h6>
-            <p><strong>Blood Pressure:</strong> {{ consultationData.bloodPressure }}</p>
-            <p><strong>Heart Rate:</strong> {{ consultationData.heartRate }}</p>
-            <p><strong>Notes:</strong> {{ consultationData.notes }}</p>
-            
-            <hr>
-            <div class="d-flex justify-content-between">
-              <button class="btn btn-danger" (click)="deleteConsultation()">Delete</button>
-              <button class="btn btn-warning" (click)="editMode = true">Update Consultation</button>
-            </div>
+  <!-- SECTION 3: CREATE / MANAGE CONSULTATION -->
+  <div *ngIf="activeTab === 'consultation'">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card shadow-sm border-0 rounded-4 p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold text-dark mb-0">🩺 Clinical Consultation Form</h4>
+            <span *ngIf="selectedApptId" class="badge bg-primary fs-6">Appointment #{{ selectedApptId }}</span>
           </div>
 
-          <!-- Edit / Create Mode -->
-          <form *ngIf="editMode" (ngSubmit)="saveConsultation()">
-            <h6 class="text-primary mb-3">{{ isUpdating ? 'Update Consultation' : 'Create Consultation' }}</h6>
-            <div class="mb-3">
-              <label>Blood Pressure</label>
-              <input type="text" class="form-control" [(ngModel)]="consultationData.bloodPressure" name="bp" required>
-            </div>
-            <div class="mb-3">
-              <label>Heart Rate</label>
-              <input type="text" class="form-control" [(ngModel)]="consultationData.heartRate" name="hr" required>
-            </div>
-            <div class="mb-3">
-              <label>Notes</label>
-              <textarea class="form-control" [(ngModel)]="consultationData.notes" name="notes" rows="3" required></textarea>
-            </div>
-            <div class="d-flex justify-content-between">
-              <button *ngIf="isUpdating" type="button" class="btn btn-secondary" (click)="editMode = false">Cancel Update</button>
-              <button *ngIf="!isUpdating" type="button" class="btn btn-secondary" (click)="selectedApptId = null">Cancel</button>
-              <button type="submit" class="btn btn-success">{{ isUpdating ? 'Save Update' : 'Create Consultation' }}</button>
-            </div>
-          </form>
+          <!-- Select Appointment Dropdown -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold text-secondary">Select Appointment to Consult:</label>
+            <select class="form-select bg-light py-2" [(ngModel)]="selectedApptId" (change)="openConsultation(selectedApptId!, 'create')">
+              <option [ngValue]="null">-- Select Appointment --</option>
+              <option *ngFor="let a of todaysAppointments" [value]="a.id">
+                Appt #{{ a.id }} — {{ a.patientName }} ({{ a.appointmentDateTime | date:'shortTime' }})
+              </option>
+            </select>
+          </div>
 
+          <div *ngIf="selectedApptId">
+            <hr class="mb-4">
+
+            <!-- View Mode -->
+            <div *ngIf="isUpdating && !editMode" class="bg-light p-4 rounded-3 mb-3">
+              <h5 class="text-primary fw-bold mb-3">Existing Consultation Record</h5>
+              <div class="mb-2"><strong>Blood Pressure:</strong> {{ consultationData.bloodPressure }}</div>
+              <div class="mb-2"><strong>Heart Rate:</strong> {{ consultationData.heartRate }}</div>
+              <div class="mb-3"><strong>Prescription & Notes:</strong> {{ consultationData.notes }}</div>
+              
+              <div class="d-flex justify-content-between pt-3 border-top">
+                <button class="btn btn-danger" (click)="deleteConsultation()">Delete Record</button>
+                <button class="btn btn-warning fw-semibold" (click)="editMode = true">Edit Consultation</button>
+              </div>
+            </div>
+
+            <!-- Create / Edit Form -->
+            <form *ngIf="editMode" (ngSubmit)="saveConsultation()">
+              <h5 class="text-primary fw-bold mb-3">{{ isUpdating ? 'Edit Consultation' : 'New Consultation Entry' }}</h5>
+              
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold text-secondary">Blood Pressure (e.g. 120/80 mmHg)</label>
+                  <input type="text" class="form-control py-2" [(ngModel)]="consultationData.bloodPressure" name="bp" placeholder="120/80" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold text-secondary">Heart Rate (e.g. 72 bpm)</label>
+                  <input type="text" class="form-control py-2" [(ngModel)]="consultationData.heartRate" name="hr" placeholder="72 bpm" required>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label fw-semibold text-secondary">Diagnosis, Symptoms & Prescription Notes</label>
+                <textarea 
+                  class="form-control py-2" 
+                  [(ngModel)]="consultationData.notes" 
+                  name="notes" 
+                  rows="4" 
+                  placeholder="Enter medical symptoms, diagnosis, prescribed medicines, and advice..." 
+                  required></textarea>
+              </div>
+
+              <div class="d-flex justify-content-between">
+                <button *ngIf="isUpdating" type="button" class="btn btn-secondary" (click)="editMode = false">Cancel Edit</button>
+                <button *ngIf="!isUpdating" type="button" class="btn btn-secondary" (click)="selectedApptId = null">Cancel</button>
+                <button type="submit" class="btn btn-success px-4 py-2 fw-semibold">
+                  {{ isUpdating ? 'Save Changes' : 'Submit Consultation' }}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div *ngIf="!selectedApptId" class="alert alert-secondary text-center my-3 py-4 rounded-3">
+            <i class="bi bi-info-circle me-1"></i> Please select an appointment from above or from Today's Appointments tab to enter consultation details.
+          </div>
         </div>
-      </div>
-      <div class="alert alert-secondary text-center" *ngIf="!selectedApptId">
-        Select an appointment from the list to view or create a consultation.
       </div>
     </div>
   </div>

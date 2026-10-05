@@ -1,12 +1,10 @@
 package com.OPD.OPDManagment.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 
 @Entity
 public class Patient {
@@ -15,28 +13,27 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Name cannot be blank")
     private String name;
-
-    @NotBlank(message = "Gender cannot be blank")
+    
+    @Column(unique = true)
+    private String email;
+    
     private String gender;
-
-    @Min(value = 0, message = "Age must be at least 0")
     private int age;
-
-    @NotBlank(message = "Phone number cannot be blank")
-    @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be exactly 10 digits")
     private String phoneNumber;
+    private String password;
 
     public Patient() {
     }
 
-    public Patient(Long id, String name, String gender, int age, String phoneNumber) {
+    public Patient(Long id, String name, String email, String gender, int age, String phoneNumber, String password) {
         this.id = id;
         this.name = name;
+        this.email = email;
         this.gender = gender;
         this.age = age;
         this.phoneNumber = phoneNumber;
+        this.password = password;
     }
 
     public Long getId() {
@@ -53,6 +50,14 @@ public class Patient {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getGender() {
@@ -77,5 +82,13 @@ public class Patient {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

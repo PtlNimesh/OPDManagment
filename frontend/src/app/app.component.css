@@ -1,0 +1,17 @@
+.extra-small {
+  font-size: 0.725rem;
+}
+
+.navbar-brand {
+  letter-spacing: 0.5px;
+}
+
+.nav-link {
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.nav-link.active {
+  font-weight: 700;
+  border-bottom: 2px solid #ffffff;
+}

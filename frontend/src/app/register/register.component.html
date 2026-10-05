@@ -1,0 +1,149 @@
+<div class="register-wrapper">
+  <div class="register-card shadow-sm border-0 rounded-4">
+    <div class="p-4 p-md-5">
+      
+      <!-- Header -->
+      <div class="text-center mb-4">
+        <div class="brand-icon mb-2">🏥</div>
+        <h3 class="fw-bold text-dark mb-1">Create an Account</h3>
+        <p class="text-muted small">Sign up for OPD Healthcare Portal</p>
+      </div>
+
+      <!-- Role Selector -->
+      <div class="role-selector mb-4">
+        <div class="row g-2">
+          <div class="col-6">
+            <button 
+              type="button" 
+              class="btn role-btn w-100 py-2.5 rounded-3 fw-semibold"
+              [class.active]="selectedRole === 'PATIENT'"
+              (click)="selectRole('PATIENT')">
+              👤 Patient
+            </button>
+          </div>
+          <div class="col-6">
+            <button 
+              type="button" 
+              class="btn role-btn w-100 py-2.5 rounded-3 fw-semibold"
+              [class.active]="selectedRole === 'DOCTOR'"
+              (click)="selectRole('DOCTOR')">
+              🩺 Doctor
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feedback Messages -->
+      <div *ngIf="errorMessage" class="alert alert-danger py-2 text-center small mb-3 border-0 rounded-3">
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="alert alert-success py-2 text-center small mb-3 border-0 rounded-3">
+        {{ successMessage }}
+      </div>
+
+      <!-- Registration Form -->
+      <form (ngSubmit)="onRegister()">
+        
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary">
+            {{ selectedRole === 'DOCTOR' ? 'Doctor Full Name' : 'Full Name' }}
+          </label>
+          <input 
+            type="text" 
+            class="form-control py-2.5 rounded-3 bg-light border-0" 
+            [(ngModel)]="name" 
+            name="name" 
+            placeholder="{{ selectedRole === 'DOCTOR' ? 'Dr. John Smith' : 'Jane Doe' }}" 
+            required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary">Email Address</label>
+          <input 
+            type="email" 
+            class="form-control py-2.5 rounded-3 bg-light border-0" 
+            [(ngModel)]="email" 
+            name="email" 
+            placeholder="{{ selectedRole === 'DOCTOR' ? 'doctor@example.com' : 'patient@example.com' }}" 
+            required>
+        </div>
+
+        <!-- Patient Fields -->
+        <div *ngIf="selectedRole === 'PATIENT'">
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label small fw-semibold text-secondary">Gender</label>
+              <select class="form-select py-2.5 rounded-3 bg-light border-0" [(ngModel)]="gender" name="gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-semibold text-secondary">Age</label>
+              <input 
+                type="number" 
+                class="form-control py-2.5 rounded-3 bg-light border-0" 
+                [(ngModel)]="age" 
+                name="age" 
+                min="0" 
+                max="120">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Phone Number (10 Digits)</label>
+            <input 
+              type="text" 
+              class="form-control py-2.5 rounded-3 bg-light border-0" 
+              [(ngModel)]="phoneNumber" 
+              name="phoneNumber" 
+              placeholder="9876543210" 
+              required 
+              pattern="^[0-9]{10}$">
+          </div>
+        </div>
+
+        <!-- Doctor Fields -->
+        <div *ngIf="selectedRole === 'DOCTOR'">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Medical Specialization</label>
+            <input 
+              type="text" 
+              class="form-control py-2.5 rounded-3 bg-light border-0" 
+              [(ngModel)]="specialization" 
+              name="specialization" 
+              placeholder="Cardiology, General Medicine..." 
+              required>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label small fw-semibold text-secondary">Password</label>
+          <input 
+            type="password" 
+            class="form-control py-2.5 rounded-3 bg-light border-0" 
+            [(ngModel)]="password" 
+            name="password" 
+            placeholder="Create password" 
+            required>
+        </div>
+
+        <button 
+          type="submit" 
+          class="btn btn-success w-100 py-2.5 rounded-3 fw-semibold shadow-sm mb-3" 
+          [disabled]="loading">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+          {{ loading ? 'Creating Account...' : 'Register' }}
+        </button>
+
+        <div class="text-center">
+          <span class="text-muted small">Already have an account? </span>
+          <a routerLink="/login" class="text-primary fw-semibold text-decoration-none small">Log In</a>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>

@@ -5,8 +5,36 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="95897ac7-3964-4c8a-9722-68c1a5c610c8" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/OPDManagment.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/controller/AppointmentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/controller/AppointmentController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/controller/ConsultationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/controller/ConsultationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/controller/DoctorController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/controller/DoctorController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/controller/PatientController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/controller/PatientController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/entity/Doctor.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/entity/Doctor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/entity/Patient.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/entity/Patient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/exception/PatientNotFountException.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/exception/PatientNotFountException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/repository/DoctorRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/repository/DoctorRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/repository/PatientRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/repository/PatientRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/service/AppointmentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/service/AppointmentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/service/ConsultationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/service/ConsultationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/service/PatientService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/OPD/OPDManagment/service/PatientService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/api.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/api.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/app.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.component.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/app.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/app.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/app.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/app.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/doctor-dashboard/doctor-dashboard.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/doctor-dashboard/doctor-dashboard.component.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/doctor-dashboard/doctor-dashboard.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/doctor-dashboard/doctor-dashboard.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/doctor-dashboard/doctor-dashboard.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/doctor-dashboard/doctor-dashboard.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/patient-dashboard/patient-dashboard.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/patient-dashboard/patient-dashboard.component.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/patient-dashboard/patient-dashboard.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/patient-dashboard/patient-dashboard.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/patient-dashboard/patient-dashboard.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/patient-dashboard/patient-dashboard.component.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,9 +58,9 @@
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 8
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="3IUHfKobGQ4s3uzeCso64Elnmnp" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -42,7 +70,9 @@
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",

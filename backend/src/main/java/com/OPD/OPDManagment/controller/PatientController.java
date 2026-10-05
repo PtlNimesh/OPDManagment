@@ -1,72 +1,53 @@
 package com.OPD.OPDManagment.controller;
 
-import org.springframework.web.bind.annotation.RestController;
-
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
+import com.OPD.OPDManagment.dto.PatientRequestDto;
+import com.OPD.OPDManagment.dto.PatientResponseDto;
+import com.OPD.OPDManagment.service.PatientService;
 import jakarta.validation.Valid;
-
-import com.OPD.OPDManagment.entity.Patient;
-import com.OPD.OPDManagment.repository.PatientRepository;
-
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-
-import com.OPD.OPDManagment.exception.PatientNotFountException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestParam;
-
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:3000"})
 @RestController
 @RequestMapping("/api/patients")
 public class PatientController {
 
-    private final PatientRepository patientRepository;
+    private final PatientService patientService;
 
-    public PatientController(PatientRepository patientRepository) {
-        this.patientRepository = patientRepository;
+    public PatientController(PatientService patientService) {
+        this.patientService = patientService;
     }
 
-
     @PostMapping
-    public Patient createPatient(@Valid @RequestBody Patient patient) {
-        return patientRepository.save(patient);
+    public ResponseEntity<PatientResponseDto> createPatient(@Valid @RequestBody PatientRequestDto patientRequestDto) {
+        PatientResponseDto createdPatient = patientService.createPatient(patientRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdPatient);
     }
 
     @GetMapping("/{id}")
-    public Patient getPatientById(@PathVariable Long id) {
-        return patientRepository.findById(id)
-                .orElseThrow(() -> new PatientNotFountException("Patient not found with id: " + id));
+    public ResponseEntity<PatientResponseDto> getPatientById(@PathVariable Long id) {
+        PatientResponseDto patient = patientService.getPatientById(id);
+        return ResponseEntity.ok(patient);
     }
 
     @GetMapping
-    public ResponseEntity<List<Patient>> getAllPatients() {
-        List<Patient> patients = patientRepository.findAll();
+    public ResponseEntity<List<PatientResponseDto>> getAllPatients() {
+        List<PatientResponseDto> patients = patientService.getAllPatients();
         return ResponseEntity.ok(patients);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Patient>> searchPatients(@RequestParam(required = false) String query) {
-        if (query == null || query.trim().isEmpty()) {
-            return ResponseEntity.ok(patientRepository.findAll());
-        }
-        List<Patient> patients = patientRepository.findByNameContainingIgnoreCaseOrPhoneNumberContaining(query, query);
+    public ResponseEntity<List<PatientResponseDto>> searchPatients(@RequestParam(required = false) String query) {
+        List<PatientResponseDto> patients = patientService.searchPatients(query);
         return ResponseEntity.ok(patients);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
-        patientRepository.deleteById(id);
+        patientService.deletePatient(id);
         return ResponseEntity.noContent().build();
     }
-
 }
